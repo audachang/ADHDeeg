@@ -1,12 +1,15 @@
-function [cTF,cIAF,cIBF,cTB,cAB,cBB] = ...
+function res = ...
     findmarkers_fspec(fn, chanstr, plotflag,pfolder)
+%2017-11-19 EC
+% added area and mean power to output
+% store input/output EEG parameter in the res struct
 %2017-11-09 added IBF and Beta band (peak 14-30, IBF+-2) detection
 % also modularize each of the major steps
 % using built-in findpeaks to locate IAF and IBF
 % correcting line and patch labels as well as returned value labels
 %2017-11-07 created by Erik Chang
 
-%plotflag=true;
+%plotflag=false;
 %read in the *.avg file
 %fn = 'H11LaC.avg';
 [signal,variance, chan_names,...
@@ -48,9 +51,14 @@ cs2ana = exp(log_cs2ana);
 cinv_xf = exp(log_inv_xf);
 
 
-nxf = 1:0.01:length(s2ana); %splined space frequecies
+nxf = 1:0.005:length(s2ana); %splined space frequecies
 
 spd2ana = spline(1:length(s2ana),s2ana , nxf);
+
+raweeg.s2ana=s2ana;
+raweeg.nxf =nxf;
+raweeg.spd2ana=spd2ana;
+
 
 log_nxf = log(nxf);
 inv_nX = [ones(size(log_nxf')) log_nxf'];
@@ -81,19 +89,25 @@ if length(pcIBF)>1
     tmp2 = tmp2(tmp21);
 end
 %[pcIBF,tmp2] = max(beta_log_cs2ana);
-cIAF = tmp1+5-1;
-cIBF = tmp2+14-1;
+res.cIAF = tmp1+5-1;
+res.cIBF = tmp2+14-1;
 %limit the searching range of TF within alpha
 [mAB,mABi] = min(alpha_log_cs2ana(1:tmp1));
 
 %TF was computed as the minimum power
 %in the extended alpha frequency range (5-14Hz)
-cTF = mABi+5-1;
-cAB = [cIAF-2, cIAF+2];
-cTB = [cTF-2 cTF];
-cBB = [cIBF-2, cIBF+2];
+res.cTF = mABi+5-1;
+res.cAB = [res.cIAF-2, res.cIAF+2];
+res.cTB = [res.cTF-2 res.cTF];
+res.cBB = [res.cIBF-2, res.cIBF+2];
 
-
+%area under curve
+%alpha band
+res=cmp_power('cAB',res,raweeg);
+%theta band
+res=cmp_power('cTB',res,raweeg);
+%beta band
+res=cmp_power('cBB',res,raweeg);
 
 if plotflag
     
@@ -102,18 +116,16 @@ if plotflag
     [a,fn,ext] = fileparts(fn);
     %ploting the frequency powerspectrum with IAF marked
     ts =sprintf('%s|original',fn);
-    leg = plotps2(xf,s2ana,Yo,cIAF,cAB,...
-        cTF,cTB,cIBF,cBB,ts);
+    leg = plotps2(xf,s2ana,Yo,res,ts);
 
     subplot(1,2,2);
     ts =sprintf('%s|corrected for 1/f',fn);
-    plotps2(xf,cs2ana,[],cIAF,cAB,...
-        cTF,cTB,cIBF,cBB,ts)
+    plotps2(xf,cs2ana,[],res,ts)
     
     set(gcf, 'Position', [0 0 1024 512],...
         'color','w');
     shg;
+    
+    fign = sprintf('%s/%s.jpg',pfolder,fn);
+    saveas(gcf, fign);
 end
-
-fign = sprintf('%s/%s.jpg',pfolder,fn);
-saveas(gcf, fign);
