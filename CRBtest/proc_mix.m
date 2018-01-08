@@ -1,6 +1,6 @@
 %%
 sID='H04';
-setpns = 'setdata/';
+setpns = 'resting/setdata/';
 setfns = dir([setpns sprintf('%s*s.set',sID)]);
 setfns = {setfns.name};
 setfns = strcat(setpns, setfns);

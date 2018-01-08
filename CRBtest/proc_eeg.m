@@ -1,5 +1,5 @@
-eegpath = 'eegdata/';
-setpath = 'setdata/';
+eegpath = 'resting/eegdata/';
+setpath = 'resting/setdata/';
 eegfns = dir([eegpath '*.eeg']);
 
 for i = 1:length({eegfns.name})
