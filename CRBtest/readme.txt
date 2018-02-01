@@ -5,4 +5,4 @@ Flow of analysis
 2. run proc_eeg.m to convert all eeg files to set files
 3. run proc_mix.m to interleave the close eye and open eye resting data and "fuse" adjacent epochs into a "trial"
 
-4. run crbtest04_resting.m to view the results of CRB analysis on a particular participant (changing the subject ID at the first line of the code to swap the participant's data for viewing)
+4. run crbtest05_resting.m to view the results of CRB analysis on a particular participant (changing the subject ID at the first line of the code to swap the participant's data for viewing)
