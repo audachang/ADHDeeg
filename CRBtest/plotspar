@@ -1,0 +1,9 @@
+#F3,F4,Fz, C3,C4,Cz, P3,P4,Pz
+indexes=3 4 5 13 14 15 23 24 25  
+#indexes=15 
+#indexes=1:27 
+freq_range=0,25
+
+
+
+
