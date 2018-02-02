@@ -6,3 +6,5 @@ Flow of analysis
 3. run proc_mix.m to interleave the close eye and open eye resting data and "fuse" adjacent epochs into a "trial"
 
 4. run crbtest05_resting.m to view the results of CRB analysis on a particular participant (changing the subject ID at the first line of the code to swap the participant's data for viewing)
+
+5. The results will be saved to a comma delimited file, meanresults.txt. 
